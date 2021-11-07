@@ -1,25 +1,18 @@
-const connection = require("../database/db");
+const pool = require("../database/db");
 
 class SummonersService {
     insertSummoner = async (name, puuid, accountId, lolId) => {
         const sql = `INSERT INTO LOL_USER (NAME, PUUID, ACCOUNT_ID, LOL_ID) VALUES ('${name}', '${puuid}', '${accountId}', '${lolId}')`;
-        connection.query(sql);
+        await pool.query(sql);
     };
 
-    findPuuid = async (name) => {
-        const sql = `SELECT PUUID FROM LOL_USER WHERE NAME = "${name}"`;
+    findPuuid = async (nickname) => {
+        const sql = `SELECT PUUID FROM LOL_USER WHERE NAME = "${nickname}"`;
 
-        console.log(sql);
+        const [[result]] = await pool.query(sql);
 
-        connection.query(sql, (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            return rows[0];
-        });
-
-        return null;
-    }
+        return result;
+    };
 }
 
 module.exports = new SummonersService();
