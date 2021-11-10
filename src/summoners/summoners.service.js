@@ -7,12 +7,20 @@ class SummonersService {
     };
 
     findPuuid = async (nickname) => {
-        const sql = `SELECT PUUID FROM LOL_USER WHERE NAME = "${nickname}"`;
+        const sql = `SELECT puuid FROM LOL_USER WHERE NAME = "${nickname}"`;
 
         const [[result]] = await pool.query(sql);
 
         return result;
     };
+
+    findSummoner = async (nickname) => {
+        const sql = `SELECT * FROM LOL_USER WHERE NAME = "${nickname}"`;
+
+        const [[result]] = await pool.query(sql);
+        console.log(result);
+        return result;
+    }
 }
 
 module.exports = new SummonersService();

@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const axios = require("axios");
 const summonerService = require("./summoners.service");
 const path = require("path");
+const { get } = require("http");
 
 dotenv.config();
 
@@ -13,18 +14,9 @@ class SummonersController {
     getSummoner = async (req, res, next) => {
         const { nickname } = req.query;
 
-        console.log(nickname);
-        const url = `${
-            process.env.KOREA_BASE_URL
-        }/lol/summoner/v4/summoners/by-name/${encodeURI(nickname)}?api_key=${
-            process.env.API_KEY
-        }`;
-
-        const { data } = await axios.get(url);
-
+        // DB에 없으면 Summoner 추가 후 API 조회 결과 return
         const findedPuuid = await this.service.findPuuid(nickname);
 
-        // DB에 없으면 Summeoner 추가
         if (!findedPuuid) {
             const url = `${
                 process.env.KOREA_BASE_URL
@@ -40,8 +32,12 @@ class SummonersController {
                 data.accountId,
                 data.id
             );
+
+            return res.json(data);
         }
 
+        // 있으면 DB에서 뽑아옴
+        const data = await this.service.findSummoner(nickname);
         res.json(data);
     };
 
@@ -50,11 +46,15 @@ class SummonersController {
     };
 
     getMatch = async (req, res, next) => {
-        const matchUrl = `${process.env.ASIA_BASE_URL}
-        /lol/match/v5/matches/by-puuid/${puuid}
-        /ids?start=0&count=20&api_key=${process.env.API_KEY}`;
+        const { nickname } = req.query;
+        const temp = await this.service.findPuuid(nickname);
+        const puuid = temp.puuid;
+        const matchUrl = `${process.env.ASIA_BASE_URL
+        }/lol/match/v5/matches/by-puuid/${puuid
+        }/ids?start=0&count=20&api_key=${process.env.API_KEY}`;
 
         const matchData = await axios.get(matchUrl);
+        res.json(matchData.data);
     };
 }
 module.exports = new SummonersController(summonerService);
