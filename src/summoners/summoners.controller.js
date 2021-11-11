@@ -42,16 +42,14 @@ class SummonersController {
     };
 
     getPage = async (req, res, next) => {
-        res.sendFile(path.join(__dirname, "../public/username.html"));
+        res.sendFile(path.join(__dirname, "../public/main.html"));
     };
 
     getMatch = async (req, res, next) => {
         const { nickname } = req.query;
         const temp = await this.service.findPuuid(nickname);
         const puuid = temp.puuid;
-        const matchUrl = `${process.env.ASIA_BASE_URL
-        }/lol/match/v5/matches/by-puuid/${puuid
-        }/ids?start=0&count=20&api_key=${process.env.API_KEY}`;
+        const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${process.env.API_KEY}`;
 
         const matchData = await axios.get(matchUrl);
         res.json(matchData.data);
