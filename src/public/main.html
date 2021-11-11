@@ -4,12 +4,46 @@
         <meta charset="utf-8" />
         <script src="javascripts/main.js"></script>
         <script src="javascripts/index.js"></script>
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="stylesheets/main/main.css"
+        />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="stylesheets/main/header.css"
+        />
         <title>YH.GG</title>
     </head>
     <body>
-        <div>
-            username: <input type="text" name="nickname" />
-            <button id="search">search</button>
-        </div>
+        <header>
+            <div style="display: flex">
+                <div id="header__logo">YH.GG</div>
+                <nav style="width: 100%">
+                    <ul id="nav__menubar">
+                        <li class="nav__menu">
+                            <a href="/summoners">전적검색</a>
+                        </li>
+                        <li class="nav__menu">
+                            <a href="#none">챔피언 분석</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <div id="outter__center__box">
+                <div id="main__image">YH.GG</div>
+                <div id="center__box">
+                    <div id="search__bar">
+                        <input type="text" name="nickname" />
+                        <button type="submit" id="search">검색</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer></footer>
     </body>
 </html>

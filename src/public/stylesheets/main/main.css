@@ -1,0 +1,45 @@
+main {
+    background-color: skyblue;
+
+    height: 80%;
+}
+
+#outter__center__box {
+    height: 50%;
+}
+
+#main__image {
+    height: calc(97% - 50px);
+
+    text-align: center;
+    font-size: 5em;
+    line-height: 500%;
+}
+
+#center__box {
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
+#search__bar {
+    width: 94%;
+    height: 50px;
+
+    margin-left: 3%;
+    background-color: gray;
+}
+
+#center__box input {
+    all: unset;
+    width: 80%;
+    height: 100%;
+
+    margin-left: 2%;
+}
+
+#search {
+    all: unset;
+    width: 16%;
+    height: 100%;
+    text-align: center;
+}

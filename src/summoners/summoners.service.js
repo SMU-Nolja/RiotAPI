@@ -20,7 +20,7 @@ class SummonersService {
         const [[result]] = await pool.query(sql);
         console.log(result);
         return result;
-    }
+    };
 }
 
 module.exports = new SummonersService();
