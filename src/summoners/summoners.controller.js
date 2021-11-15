@@ -11,6 +11,14 @@ class SummonersController {
         this.service = summonerService;
     }
 
+    //메인 페이지
+    getMainPage = async (req, res, next) => {
+        res.sendFile(path.join(__dirname, "../public/main.html"));
+    };
+
+    getInfoPage = async (req, res, next) => {
+        res.sendFile(path.join(__dirname + "/../public/info.html"));
+    };
     getSummoner = async (req, res, next) => {
         const { nickname } = req.query;
 
@@ -39,10 +47,6 @@ class SummonersController {
         // 있으면 DB에서 뽑아옴
         const data = await this.service.findSummoner(nickname);
         res.json(data);
-    };
-
-    getPage = async (req, res, next) => {
-        res.sendFile(path.join(__dirname, "../public/main.html"));
     };
 
     getMatch = async (req, res, next) => {
