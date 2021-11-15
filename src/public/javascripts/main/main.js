@@ -9,6 +9,7 @@ class Main {
         this.search.addEventListener("click", async () => {
             const nickname = document.getElementsByName("nickname")[0].value;
 
+            window.location.href = `/summoners/info?nickname=${nickname}`;
             // //Summoner의 NAME, PUUID 등 정보를 가져옴
             // const resultOfSummonerInfo = await fetch(
             //     `/summoners/info?nickname=${nickname}`,
