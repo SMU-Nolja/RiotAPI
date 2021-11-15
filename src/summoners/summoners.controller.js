@@ -16,6 +16,9 @@ class SummonersController {
         res.sendFile(path.join(__dirname, "../public/main.html"));
     };
 
+    getInfoPage = async (req, res, next) => {
+        res.sendFile(path.join(__dirname + "/../public/info.html"));
+    };
     getSummoner = async (req, res, next) => {
         const { nickname } = req.query;
 
