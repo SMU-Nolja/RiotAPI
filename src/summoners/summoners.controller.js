@@ -19,13 +19,14 @@ class SummonersController {
     getInfoPage = async (req, res, next) => {
         res.sendFile(path.join(__dirname + "/../public/info.html"));
     };
+
     getSummoner = async (req, res, next) => {
         const { nickname } = req.query;
 
         // DB에 없으면 Summoner 추가 후 API 조회 결과 return
-        const findedPuuid = await this.service.findPuuid(nickname);
+        const foundPuuid = await this.service.findPuuid(nickname);
 
-        if (!findedPuuid) {
+        if (!foundPuuid) {
             const url = `${
                 process.env.KOREA_BASE_URL
             }/lol/summoner/v4/summoners/by-name/${encodeURI(
@@ -40,11 +41,8 @@ class SummonersController {
                 data.accountId,
                 data.id
             );
-
-            return res.json(data);
         }
 
-        // 있으면 DB에서 뽑아옴
         const data = await this.service.findSummoner(nickname);
         res.json(data);
     };
@@ -53,24 +51,38 @@ class SummonersController {
     getMatchInfo = async (req, res, next) => {
         const temp = await this.getMatchId(req, res, next);
         const matchId = temp.data;
-        
-        console.log(matchId);
 
         for (const id of matchId) {
-            const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/${id}?api_key=${process.env.API_KEY}`;
-            
-            const matchInfo = await axios.get(matchUrl);
-
-            const duration = matchInfo.data.info.gameDuration
-            const temp = matchInfo.data.info.gameEndTimestamp;
-            let endTime = new Date(temp);
-            endTime = common.toMysqlFormat(endTime);
-            console.log(endTime);
-
-            const findedMatchId = await this.service.findMatchId(id)
-            if (!findedMatchId) {
+            // DB에 matchId 없으면 경기 정보 추가
+            const foundMatchId = this.service.findMatchId(id);
+            if (!foundMatchId) {
+                const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/${id}?api_key=${process.env.API_KEY}`;
+    
+                const matchInfo = await axios.get(matchUrl);
+    
+                const duration = matchInfo.data.info.gameDuration
+                const temp = matchInfo.data.info.gameEndTimestamp;
+                let endTime = new Date(temp);
+                endTime = common.toMysqlFormat(endTime);
+    
                 await this.service.insertMatchInfo(id, duration, endTime);
+    
+                const participants = matchInfo.data.info.participants;
+                
+                for (const participant of participants) {
+                    const puuid = participant.puuid;
+                    const championName = participant.championName;
+                    const championLevel = participant.champLevel;
+                    const kills = participant.kills;
+                    const deaths = participant.deaths;
+                    const assists = participant.assists;
+                    const totalMinionKilled = participant.totalMinionsKilled;
+    
+                    await this.service.insertParticipant(puuid, championName, championLevel, kills, deaths, assists, totalMinionKilled, id);
+                }
             }
+            const { data } = await this.service.findParticipant(id);
+            res.json(data);
         }
     }
 
