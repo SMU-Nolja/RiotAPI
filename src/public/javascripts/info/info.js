@@ -17,5 +17,7 @@ class Info {
         this.summonerInfo = await summonerInfoJson.json();
 
         console.log(this.summonerInfo);
+
+        this.body.getElementsByClassName("name")[0].innerHTML = await this.summonerInfo;
     }
 }
