@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 const axios = require("axios");
 const summonerService = require("./summoners.service");
 const path = require("path");
-const { get } = require("http");
+const common = require("../common/common");
 
 dotenv.config();
 
@@ -49,14 +49,39 @@ class SummonersController {
         res.json(data);
     };
 
-    getMatch = async (req, res, next) => {
+    
+    getMatchInfo = async (req, res, next) => {
+        const temp = await this.getMatchId(req, res, next);
+        const matchId = temp.data;
+        
+        console.log(matchId);
+
+        for (const id of matchId) {
+            const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/${id}?api_key=${process.env.API_KEY}`;
+            
+            const matchInfo = await axios.get(matchUrl);
+
+            const duration = matchInfo.data.info.gameDuration
+            const temp = matchInfo.data.info.gameEndTimestamp;
+            let endTime = new Date(temp);
+            endTime = common.toMysqlFormat(endTime);
+            console.log(endTime);
+
+            const findedMatchId = await this.service.findMatchId(id)
+            if (!findedMatchId) {
+                await this.service.insertMatchInfo(id, duration, endTime);
+            }
+        }
+    }
+
+    getMatchId = async (req, res, next) => {
         const { nickname } = req.query;
         const temp = await this.service.findPuuid(nickname);
         const puuid = temp.puuid;
         const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${process.env.API_KEY}`;
-
-        const matchData = await axios.get(matchUrl);
-        res.json(matchData.data);
+    
+        const matchId = await axios.get(matchUrl);
+        return matchId;
     };
 }
 module.exports = new SummonersController(summonerService);

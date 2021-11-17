@@ -5,6 +5,6 @@ const SummonersController = require("./summoners.controller");
 router.get("/", SummonersController.getMainPage);
 router.get("/info", SummonersController.getInfoPage);
 router.get("/info/summonerInfo", SummonersController.getSummoner);
-router.get("/match", SummonersController.getMatch);
+router.get("/info/matchInfo", SummonersController.getMatchInfo);
 
 module.exports = router;
