@@ -13,11 +13,18 @@ class Info {
             `/summoners/info/summonerInfo?${this.query}`,
             { headers: { "Content-Type": "application/json" }, method: "GET" }
         );
-
+        
         this.summonerInfo = await summonerInfoJson.json();
 
-        console.log(this.summonerInfo);
+        this.body.getElementsByClassName("name")[0].innerHTML = this.summonerInfo.NAME;
 
-        this.body.getElementsByClassName("name")[0].innerHTML = await this.summonerInfo;
+        // 소환사의 경기 정보를 가져온다.
+        const matchInfoJson = await fetch(
+            `/summoners/info/matchInfo?${this.query}`,
+            { headers: { "Content-Type": "application/json" }, method: "GET" }
+        );
+
+        this.matchInfo = await matchInfoJson.json();
+        this.body.getElementsByClassName("name")[0].innerHTML = this.matchInfo;
     }
 }
