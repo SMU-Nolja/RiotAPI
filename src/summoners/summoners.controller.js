@@ -49,9 +49,11 @@ class SummonersController {
 
     
     getMatchInfo = async (req, res, next) => {
+        const data = [];
+        
         const temp = await this.getMatchId(req, res, next);
         const matchId = temp.data;
-
+        
         for (const id of matchId) {
             // DB에 matchId 없으면 경기 정보 추가
             const foundMatchId = this.service.findMatchId(id);
@@ -64,7 +66,7 @@ class SummonersController {
                 const temp = matchInfo.data.info.gameEndTimestamp;
                 let endTime = new Date(temp);
                 endTime = common.toMysqlFormat(endTime);
-    
+
                 await this.service.insertMatchInfo(id, duration, endTime);
     
                 const participants = matchInfo.data.info.participants;
@@ -81,9 +83,12 @@ class SummonersController {
                     await this.service.insertParticipant(puuid, championName, championLevel, kills, deaths, assists, totalMinionKilled, id);
                 }
             }
-            const { data } = await this.service.findParticipant(id);
-            res.json(data);
+            const matchInfo = await this.service.findMatchInfo(id);
+            const participantInfo = await this.service.findParticipant(id);
+
+            data.push({matchInfo, participantInfo});
         }
+        res.json(data);
     }
 
     getMatchId = async (req, res, next) => {

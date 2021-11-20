@@ -32,6 +32,13 @@ class SummonersService {
         return result;
     };
 
+    findMatchInfo = async (matchId) => {
+        const sql = `SELECT * from matches WHERE match_id = '${matchId}' limit 1`;
+        const [[result]] = await pool.query(sql);
+
+        return result;
+    }
+
     insertParticipant = async (puuid, championName, championLevel, kills, deaths, assists, totalMinionKilled, matchId) => {
         const sql = `INSERT INTO participants(puuid, champion_name, champion_level, kills, deaths, assists, total_minion_killed, match_id) 
                     VALUES('${puuid}', '${championName}', ${championLevel}, ${kills}, ${deaths}, ${assists}, ${totalMinionKilled}, '${matchId}')`;
@@ -41,7 +48,7 @@ class SummonersService {
     findParticipant = async (matchId) => {
         const sql = `SELECT * FROM participants WHERE match_id = '${matchId}'`;
         const [result] = await pool.query(sql);
-
+        
         return result;
     }
 }
