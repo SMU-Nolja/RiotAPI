@@ -7,14 +7,43 @@
 
         <script src="/javascripts/info/index.js"></script>
         <script src="/javascripts/info/info.js"></script>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="/stylesheets/info/main.css"
+        />
 
         <title>Result</title>
     </head>
     <body>
-        <div class="profile">
-            <div class="information">
-                <span class="name"></span>
+        <header>
+            <div style="display: flex">
+                <div id="header__logo">YH.GG</div>
+                <nav style="width: 100%">
+                    <ul id="nav__menubar">
+                        <li class="nav__menu">
+                            <a href="/summoners">전적검색</a>
+                        </li>
+                        <li class="nav__menu">
+                            <a href="#none">챔피언 분석</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-        </div>
+        </header>
+        <main>
+            <div class="title">
+                <div class="title__content">
+                    <div class="name"></div>
+                </div>
+            </div>
+            <div class="menu__bar"></div>
+            <div class="wrap__content">
+                <div class="side__content"></div>
+                <div class="content"></div>
+            </div>
+        </main>
+        <footer></footer>
     </body>
 </html>

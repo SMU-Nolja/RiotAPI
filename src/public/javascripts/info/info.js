@@ -13,10 +13,11 @@ class Info {
             `/summoners/info/summonerInfo?${this.query}`,
             { headers: { "Content-Type": "application/json" }, method: "GET" }
         );
-        
+
         this.summonerInfo = await summonerInfoJson.json();
 
-        this.body.getElementsByClassName("name")[0].innerHTML = this.summonerInfo.NAME;
+        this.body.getElementsByClassName("name")[0].innerHTML =
+            this.summonerInfo.NAME;
 
         // 소환사의 경기 정보를 가져온다.
         const matchInfoJson = await fetch(
@@ -25,6 +26,35 @@ class Info {
         );
 
         this.matchInfo = await matchInfoJson.json();
-        this.body.getElementsByClassName("name")[0].innerHTML = this.matchInfo;
+        const content = this.body.getElementsByClassName("content")[0];
+
+        const info = document.createElement("div");
+        info.className = "info";
+        info.innerHTML = contentInfo;
+        content.appendChild(info);
+
+        const match = info.childNodes[0];
+        match.innerHTML = this.matchInfo[0].matchInfo.end_time_stamp;
+
+        const participant = info.childNodes[1];
+        participant.innerHTML = this.matchInfo[0].participantInfo[0].puuid;
     }
 }
+
+// function createContent() {
+//     const info = document.createElement("div");
+
+//     const participantDiv = document.createElement("div");
+//     participantDiv.className = "participant";
+
+//     const matchDiv = document.createElement("div");
+//     matchDiv.className = "match";
+
+//     content.appendChild(matchDiv);
+//     content.appendChild(participantDiv);
+
+//     return content;
+// }
+
+const contentInfo = `<div class="match"> </div>\
+<div class="participant"></div>`;
