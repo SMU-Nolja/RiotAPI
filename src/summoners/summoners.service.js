@@ -13,6 +13,13 @@ class SummonersService {
         return result;
     };
 
+    findSummonerId = async (nickname) => {
+        const sql = `SELECT LOL_ID FROM LOL_USER WHERE NAME = '${nickname}' limit 1`;
+        const [[result]] = await pool.query(sql);
+
+        return result;
+    };
+
     findSummoner = async (nickname) => {
         const sql = `SELECT * FROM LOL_USER WHERE NAME = '${nickname}' limit 1`;
         const [[result]] = await pool.query(sql);
@@ -37,11 +44,11 @@ class SummonersService {
         const [[result]] = await pool.query(sql);
 
         return result;
-    }
+    };
 
-    insertParticipant = async (puuid, championName, championLevel, kills, deaths, assists, totalMinionKilled, matchId) => {
-        const sql = `INSERT INTO participants(puuid, champion_name, champion_level, kills, deaths, assists, total_minion_killed, match_id) 
-                    VALUES('${puuid}', '${championName}', ${championLevel}, ${kills}, ${deaths}, ${assists}, ${totalMinionKilled}, '${matchId}')`;
+    insertParticipant = async (puuid, summonerName, championName, championLevel, kills, deaths, assists, totalMinionKilled, matchId) => {
+        const sql = `INSERT INTO participants(puuid, summoner_name, champion_name, champion_level, kills, deaths, assists, total_minion_killed, match_id) 
+                    VALUES('${puuid}', '${summonerName}', '${championName}', ${championLevel}, ${kills}, ${deaths}, ${assists}, ${totalMinionKilled}, '${matchId}')`;
         await pool.query(sql);
     };
 
@@ -50,7 +57,7 @@ class SummonersService {
         const [result] = await pool.query(sql);
         
         return result;
-    }
+    };
 }
 
 module.exports = new SummonersService();
