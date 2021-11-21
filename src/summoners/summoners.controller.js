@@ -42,9 +42,8 @@ class SummonersController {
                 data.id
             );
         }
-
         const data = await this.service.findSummoner(nickname);
-        res.json(data);
+        return res.json(data);
     };
 
     getMatchInfo = async (req, res, next) => {
@@ -55,7 +54,8 @@ class SummonersController {
 
         for (const id of matchId) {
             // DB에 matchId 없으면 경기 정보 추가
-            const foundMatchId = this.service.findMatchId(id);
+            const foundMatchId = await this.service.findMatchId(id);
+
             if (!foundMatchId) {
                 const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/${id}?api_key=${process.env.API_KEY}`;
 
@@ -72,15 +72,18 @@ class SummonersController {
 
                 for (const participant of participants) {
                     const puuid = participant.puuid;
+                    const summonerName = participant.summonerName;
                     const championName = participant.championName;
                     const championLevel = participant.champLevel;
                     const kills = participant.kills;
                     const deaths = participant.deaths;
                     const assists = participant.assists;
+
                     const totalMinionKilled = participant.totalMinionsKilled;
 
                     await this.service.insertParticipant(
                         puuid,
+                        summonerName,
                         championName,
                         championLevel,
                         kills,
@@ -96,8 +99,34 @@ class SummonersController {
 
             data.push({ matchInfo, participantInfo });
         }
-        console.log(data[0].participantInfo[0].puuid);
-        res.json(data[0].participantInfo[0].puuid);
+
+        return res.json(data);
+    };
+
+    getCurrentGameInfo = async (req, res, next) => {
+        const { nickname } = req.query;
+        const temp = await this.service.findSummonerId(nickname);
+        const summonerId = temp.LOL_ID;
+
+        console.log(summonerId);
+
+        const url = `${process.env.KOREA_BASE_URL}/lol/spectator/v4/active-games/by-summoner/${summonerId}?api_key=${process.env.API_KEY}`;
+
+        const currentGameInfo = await axios.get(url);
+
+        const gameStartTime = currentGameInfo.data.gameStartTime;
+        const gameLength = currentGameInfo.data.gameLength;
+        const bannedChampions = currentGameInfo.data.bannedChampions;
+        const participants = currentGameInfo.data.participants;
+
+        const data = {
+            gameStartTime,
+            gameLength,
+            bannedChampions,
+            participants,
+        };
+
+        return res.json(data);
     };
 
     getMatchId = async (req, res, next) => {
