@@ -39,6 +39,13 @@ class SummonersService {
         return result;
     };
 
+    findMatchIdByNickname = async (nickname) => {
+        const sql = `SELECT match_id FROM participants WHERE summoner_name = '${nickname}'`;
+        const [result] = await pool.query(sql);
+
+        return result;
+    };
+
     findMatchInfo = async (matchId) => {
         const sql = `SELECT * FROM matches WHERE match_id = '${matchId}' limit 1`;
         const [[result]] = await pool.query(sql);
