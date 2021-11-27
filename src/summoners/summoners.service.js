@@ -23,7 +23,7 @@ class SummonersService {
     findSummoner = async (nickname) => {
         const sql = `SELECT * FROM LOL_USER WHERE NAME = '${nickname}' limit 1`;
         const [[result]] = await pool.query(sql);
-        
+
         return result;
     };
 
@@ -33,29 +33,46 @@ class SummonersService {
     };
 
     findMatchId = async (matchId) => {
-        const sql = `SELECT match_id from matches WHERE match_id = '${matchId}' limit 1`;
+        const sql = `SELECT match_id FROM matches WHERE match_id = '${matchId}' limit 1`;
         const [[result]] = await pool.query(sql);
 
         return result;
     };
 
     findMatchInfo = async (matchId) => {
-        const sql = `SELECT * from matches WHERE match_id = '${matchId}' limit 1`;
+        const sql = `SELECT * FROM matches WHERE match_id = '${matchId}' limit 1`;
         const [[result]] = await pool.query(sql);
 
         return result;
     };
 
-    insertParticipant = async (puuid, summonerName, championName, championLevel, kills, deaths, assists, totalMinionKilled, matchId) => {
-        const sql = `INSERT INTO participants(puuid, summoner_name, champion_name, champion_level, kills, deaths, assists, total_minion_killed, match_id) 
-                    VALUES('${puuid}', '${summonerName}', '${championName}', ${championLevel}, ${kills}, ${deaths}, ${assists}, ${totalMinionKilled}, '${matchId}')`;
+    insertParticipant = async (
+        puuid,
+        summonerName,
+        championId,
+        championLevel,
+        kills,
+        deaths,
+        assists,
+        totalMinionKilled,
+        matchId
+    ) => {
+        const sql = `INSERT INTO participants(puuid, summoner_name, champion_id, champion_level, kills, deaths, assists, total_minion_killed, match_id) 
+                    VALUES('${puuid}', '${summonerName}', '${championId}', ${championLevel}, ${kills}, ${deaths}, ${assists}, ${totalMinionKilled}, '${matchId}')`;
         await pool.query(sql);
     };
 
     findParticipant = async (matchId) => {
-        const sql = `SELECT * FROM participants WHERE match_id = '${matchId}'`;
+        const sql = `SELECT * FROM participants NATURAL JOIN champions WHERE match_id = '${matchId}'`;
         const [result] = await pool.query(sql);
-        
+
+        return result;
+    };
+
+    findChampionNameById = async (id) => {
+        const sql = `SELECT champion_name FROM champions WHERE champion_id = '${id}' limit 1`;
+        const [[result]] = await pool.query(sql);
+
         return result;
     };
 }

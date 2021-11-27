@@ -73,7 +73,7 @@ class SummonersController {
                 for (const participant of participants) {
                     const puuid = participant.puuid;
                     const summonerName = participant.summonerName;
-                    const championName = participant.championName;
+                    const championId = participant.championId;
                     const championLevel = participant.champLevel;
                     const kills = participant.kills;
                     const deaths = participant.deaths;
@@ -84,7 +84,7 @@ class SummonersController {
                     await this.service.insertParticipant(
                         puuid,
                         summonerName,
-                        championName,
+                        championId,
                         championLevel,
                         kills,
                         deaths,
@@ -108,8 +108,6 @@ class SummonersController {
         const temp = await this.service.findSummonerId(nickname);
         const summonerId = temp.LOL_ID;
 
-        console.log(summonerId);
-
         const url = `${process.env.KOREA_BASE_URL}/lol/spectator/v4/active-games/by-summoner/${summonerId}?api_key=${process.env.API_KEY}`;
 
         const currentGameInfo = await axios.get(url);
@@ -118,6 +116,13 @@ class SummonersController {
         const gameLength = currentGameInfo.data.gameLength;
         const bannedChampions = currentGameInfo.data.bannedChampions;
         const participants = currentGameInfo.data.participants;
+
+        for (const participant of participants) {
+            const temp = await this.service.findChampionNameById(
+                participant.championId
+            );
+            participant.championName = temp.champion_name;
+        }
 
         const data = {
             gameStartTime,
