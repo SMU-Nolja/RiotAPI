@@ -33,14 +33,21 @@ class SummonersService {
     };
 
     findMatchId = async (matchId) => {
-        const sql = `SELECT match_id from matches WHERE match_id = '${matchId}' limit 1`;
+        const sql = `SELECT match_id FROM matches WHERE match_id = '${matchId}' limit 1`;
         const [[result]] = await pool.query(sql);
 
         return result;
     };
 
+    findMatchIdByNickname = async (nickname) => {
+        const sql = `SELECT match_id FROM participants WHERE summoner_name = '${nickname}'`;
+        const [result] = await pool.query(sql);
+
+        return result;
+    };
+
     findMatchInfo = async (matchId) => {
-        const sql = `SELECT * from matches WHERE match_id = '${matchId}' limit 1`;
+        const sql = `SELECT * FROM matches WHERE match_id = '${matchId}' limit 1`;
         const [[result]] = await pool.query(sql);
 
         return result;
@@ -63,8 +70,15 @@ class SummonersService {
     };
 
     findParticipant = async (matchId) => {
-        const sql = `SELECT * FROM participants natural join champions WHERE match_id = '${matchId}'`;
+        const sql = `SELECT * FROM participants NATURAL JOIN champions WHERE match_id = '${matchId}'`;
         const [result] = await pool.query(sql);
+
+        return result;
+    };
+
+    findChampionNameById = async (id) => {
+        const sql = `SELECT champion_name FROM champions WHERE champion_id = '${id}' limit 1`;
+        const [[result]] = await pool.query(sql);
 
         return result;
     };

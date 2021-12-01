@@ -47,9 +47,62 @@ class SummonersController {
     };
 
     getMatchInfo = async (req, res, next) => {
+        await this.updateMatchInfo(req, res, next);
+
+        const { nickname } = req.query;
         const data = [];
 
-        const temp = await this.getMatchId(req, res, next);
+        const matchIds = await this.service.findMatchIdByNickname(nickname);
+
+        for (const id of matchIds) {
+            const matchInfo = await this.service.findMatchInfo(id.match_id);
+            const participantInfo = await this.service.findParticipant(
+                id.match_id
+            );
+            data.push({ matchInfo, participantInfo });
+        }
+        console.log(data);
+        return res.json(data);
+    };
+
+    getCurrentGameInfo = async (req, res, next) => {
+        const { nickname } = req.query;
+        const temp = await this.service.findSummonerId(nickname);
+        const summonerId = temp.LOL_ID;
+
+        const url = `${process.env.KOREA_BASE_URL}/lol/spectator/v4/active-games/by-summoner/${summonerId}?api_key=${process.env.API_KEY}`;
+
+        const currentGameInfo = await axios.get(url);
+
+        const gameStartTime = currentGameInfo.data.gameStartTime;
+        const gameLength = currentGameInfo.data.gameLength;
+        const bannedChampions = currentGameInfo.data.bannedChampions;
+        const participants = currentGameInfo.data.participants;
+
+        for (const participant of participants) {
+            const temp = await this.service.findChampionNameById(
+                participant.championId
+            );
+            participant.championName = temp.champion_name;
+        }
+
+        const data = {
+            gameStartTime,
+            gameLength,
+            bannedChampions,
+            participants,
+        };
+
+        return res.json(data);
+    };
+
+    updateMatchInfo = async (req, res, next) => {
+        const { nickname } = req.query;
+        let temp = await this.service.findPuuid(nickname);
+        const puuid = temp.puuid;
+        const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${process.env.API_KEY}`;
+
+        temp = await axios.get(matchUrl);
         const matchId = temp.data;
 
         for (const id of matchId) {
@@ -94,49 +147,7 @@ class SummonersController {
                     );
                 }
             }
-            const matchInfo = await this.service.findMatchInfo(id);
-            const participantInfo = await this.service.findParticipant(id);
-
-            data.push({ matchInfo, participantInfo });
         }
-
-        return res.json(data);
-    };
-
-    getCurrentGameInfo = async (req, res, next) => {
-        const { nickname } = req.query;
-        const temp = await this.service.findSummonerId(nickname);
-        const summonerId = temp.LOL_ID;
-
-        console.log(summonerId);
-
-        const url = `${process.env.KOREA_BASE_URL}/lol/spectator/v4/active-games/by-summoner/${summonerId}?api_key=${process.env.API_KEY}`;
-
-        const currentGameInfo = await axios.get(url);
-
-        const gameStartTime = currentGameInfo.data.gameStartTime;
-        const gameLength = currentGameInfo.data.gameLength;
-        const bannedChampions = currentGameInfo.data.bannedChampions;
-        const participants = currentGameInfo.data.participants;
-
-        const data = {
-            gameStartTime,
-            gameLength,
-            bannedChampions,
-            participants,
-        };
-
-        return res.json(data);
-    };
-
-    getMatchId = async (req, res, next) => {
-        const { nickname } = req.query;
-        const temp = await this.service.findPuuid(nickname);
-        const puuid = temp.puuid;
-        const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${process.env.API_KEY}`;
-
-        const matchId = await axios.get(matchUrl);
-        return matchId;
     };
 }
 module.exports = new SummonersController(summonerService);
