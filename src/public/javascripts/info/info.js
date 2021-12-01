@@ -39,7 +39,10 @@ class Info {
             const matchNode = infoNode.childNodes[0];
             const participantNode = infoNode.childNodes[1];
 
-            matchNode.innerText = `게임종료시간:${match.matchInfo.end_time_stamp}  게임 시간:${match.matchInfo.game_duration}초`;
+            const matchDuration = new Date(match.matchInfo.game_duration * 1000)
+                .toISOString()
+                .substr(11, 8);
+            matchNode.innerText = `게임종료시간: ${match.matchInfo.end_time_stamp}  게임 시간: ${matchDuration}`;
 
             console.log(match.matchInfo);
             console.log(match.participantInfo);
