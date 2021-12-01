@@ -24,7 +24,7 @@ class SummonersController {
         const { nickname } = req.query;
 
         // DB에 없으면 Summoner 추가 후 API 조회 결과 return
-        const foundPuuid = await this.service.findPuuid(nickname);
+        const foundPuuid = await this.service.findPuuidByNickname(nickname);
 
         if (!foundPuuid) {
             const url = `${
@@ -42,7 +42,7 @@ class SummonersController {
                 data.id
             );
         }
-        const data = await this.service.findSummoner(nickname);
+        const data = await this.service.findSummonerByNickname(nickname);
         return res.json(data);
     };
 
@@ -52,22 +52,23 @@ class SummonersController {
         const { nickname } = req.query;
         const data = [];
 
-        const matchIds = await this.service.findMatchIdByNickname(nickname);
+        const matchIds = await this.service.findMatchIdsByNickname(nickname);
 
         for (const id of matchIds) {
-            const matchInfo = await this.service.findMatchInfo(id.match_id);
-            const participantInfo = await this.service.findParticipant(
+            const matchInfo = await this.service.findMatchInfoByMatchId(
                 id.match_id
             );
+            const participantInfo =
+                await this.service.findParticipantsByMatchId(id.match_id);
             data.push({ matchInfo, participantInfo });
         }
-        console.log(data);
+
         return res.json(data);
     };
 
     getCurrentGameInfo = async (req, res, next) => {
         const { nickname } = req.query;
-        const temp = await this.service.findSummonerId(nickname);
+        const temp = await this.service.findSummonerIdByNickname(nickname);
         const summonerId = temp.LOL_ID;
 
         const url = `${process.env.KOREA_BASE_URL}/lol/spectator/v4/active-games/by-summoner/${summonerId}?api_key=${process.env.API_KEY}`;
@@ -80,7 +81,7 @@ class SummonersController {
         const participants = currentGameInfo.data.participants;
 
         for (const participant of participants) {
-            const temp = await this.service.findChampionNameById(
+            const temp = await this.service.findChampionNameByChampionId(
                 participant.championId
             );
             participant.championName = temp.champion_name;
@@ -98,7 +99,7 @@ class SummonersController {
 
     updateMatchInfo = async (req, res, next) => {
         const { nickname } = req.query;
-        let temp = await this.service.findPuuid(nickname);
+        let temp = await this.service.findPuuidByNickname(nickname);
         const puuid = temp.puuid;
         const matchUrl = `${process.env.ASIA_BASE_URL}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=20&api_key=${process.env.API_KEY}`;
 

@@ -6,21 +6,21 @@ class SummonersService {
         await pool.query(sql);
     };
 
-    findPuuid = async (nickname) => {
+    findPuuidByNickname = async (nickname) => {
         const sql = `SELECT puuid FROM LOL_USER WHERE NAME = '${nickname}' limit 1`;
         const [[result]] = await pool.query(sql);
 
         return result;
     };
 
-    findSummonerId = async (nickname) => {
+    findSummonerIdByNickname = async (nickname) => {
         const sql = `SELECT LOL_ID FROM LOL_USER WHERE NAME = '${nickname}' limit 1`;
         const [[result]] = await pool.query(sql);
 
         return result;
     };
 
-    findSummoner = async (nickname) => {
+    findSummonerByNickname = async (nickname) => {
         const sql = `SELECT * FROM LOL_USER WHERE NAME = '${nickname}' limit 1`;
         const [[result]] = await pool.query(sql);
 
@@ -39,14 +39,14 @@ class SummonersService {
         return result;
     };
 
-    findMatchIdByNickname = async (nickname) => {
+    findMatchIdsByNickname = async (nickname) => {
         const sql = `SELECT match_id FROM participants WHERE summoner_name = '${nickname}'`;
         const [result] = await pool.query(sql);
 
         return result;
     };
 
-    findMatchInfo = async (matchId) => {
+    findMatchInfoByMatchId = async (matchId) => {
         const sql = `SELECT * FROM matches WHERE match_id = '${matchId}' limit 1`;
         const [[result]] = await pool.query(sql);
 
@@ -69,14 +69,14 @@ class SummonersService {
         await pool.query(sql);
     };
 
-    findParticipant = async (matchId) => {
+    findParticipantsByMatchId = async (matchId) => {
         const sql = `SELECT * FROM participants NATURAL JOIN champions WHERE match_id = '${matchId}'`;
         const [result] = await pool.query(sql);
 
         return result;
     };
 
-    findChampionNameById = async (id) => {
+    findChampionNameByChampionId = async (id) => {
         const sql = `SELECT champion_name FROM champions WHERE champion_id = '${id}' limit 1`;
         const [[result]] = await pool.query(sql);
 
