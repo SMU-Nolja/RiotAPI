@@ -73,7 +73,7 @@ class SummonersController {
                 for (const participant of participants) {
                     const puuid = participant.puuid;
                     const summonerName = participant.summonerName;
-                    const championName = participant.championName;
+                    const championId = participant.championId;
                     const championLevel = participant.champLevel;
                     const kills = participant.kills;
                     const deaths = participant.deaths;
@@ -84,7 +84,7 @@ class SummonersController {
                     await this.service.insertParticipant(
                         puuid,
                         summonerName,
-                        championName,
+                        championId,
                         championLevel,
                         kills,
                         deaths,

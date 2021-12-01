@@ -26,19 +26,40 @@ class Info {
             { headers: { "Content-Type": "application/json" }, method: "GET" }
         );
 
-        this.matchInfo = await matchInfoJson.json();
+        //20개의 경기정보
+        const matchInfo = await matchInfoJson.json();
         const content = this.body.getElementsByClassName("content")[0];
+        for (const match of matchInfo) {
+            //한 경기의 정보가 들어가는 div생성
+            const infoNode = document.createElement("div");
+            infoNode.className = "info";
+            infoNode.innerHTML = contentInfo;
+            content.appendChild(infoNode);
 
-        const info = document.createElement("div");
-        info.className = "info";
-        info.innerHTML = contentInfo;
-        content.appendChild(info);
+            const matchNode = infoNode.childNodes[0];
+            const participantNode = infoNode.childNodes[1];
 
-        const match = info.childNodes[0];
-        match.innerHTML = this.matchInfo[0].matchInfo.end_time_stamp;
+            matchNode.innerText = `게임종료시간:${match.matchInfo.end_time_stamp}  게임 시간:${match.matchInfo.game_duration}초`;
 
-        const participant = info.childNodes[1];
-        participant.innerHTML = this.matchInfo[0].participantInfo[0].puuid;
+            console.log(match.matchInfo);
+            console.log(match.participantInfo);
+
+            createParticipantDivs(match.participantInfo, participantNode);
+
+            for (const participant of match.participantInfo) {
+            }
+        }
+
+        // const info = document.createElement("div");
+        // info.className = "info";
+        // info.innerHTML = contentInfo;
+        // content.appendChild(info);
+
+        // const match = info.childNodes[0];
+        // match.innerHTML = matchInfo[0].matchInfo.end_time_stamp;
+
+        // const participant = info.childNodes[1];
+        // participant.innerHTML = matchInfo[0].participantInfo[0].puuid;
     }
 }
 
@@ -58,4 +79,17 @@ class Info {
 // }
 
 const contentInfo = `<div class="match"> </div>\
-<div class="participant"></div>`;
+<div class="participants"></div>`;
+
+const createParticipantDivs = (participantArray, parentDiv) => {
+    for (const participant of participantArray) {
+        const championImage = `http://ddragon.leagueoflegends.com/cdn/11.23.1/img/champion/${participant.champion_name}.png`;
+        const participantDiv = document.createElement("img");
+        participantDiv.src = championImage;
+        participantDiv.style.width = "50px";
+        participantDiv.style.height = "50px";
+        participantDiv.className = "participant";
+
+        parentDiv.appendChild(participantDiv);
+    }
+};
